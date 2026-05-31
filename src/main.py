@@ -44,17 +44,21 @@ def predict(model, env, portfolio_value, num_stock_shares):
         num_stock_shares=[num_stock_shares],
     )
     obs, info = predict_env.reset()
-    action, _states = model.predict(obs, deterministic=True)
+    action, _states = model.predict(obs)
     print(f"Predicted action: {action}")
 
-    action = action[0]
+    action = int(action[0] * predict_env.hmax)
 
     # check if the action is valid
-    if action < 0 and num_stock_shares == 0:
-        action = 0
+    if action < 0:
+        tosell = -action
+        if tosell > num_stock_shares:
+            action = num_stock_shares
 
-    if action > 0 and action * row_df['close'][0] > portfolio_value:
-        action = 0
+    if action > 0:
+        tobuy = action
+        if tobuy * predict_env.df["close"][0] > portfolio_value:
+            action = portfolio_value // predict_env["close"][0]
 
     return action
 
@@ -128,4 +132,4 @@ if st.button("Generate Prediction"):
         with col1:
             st.metric("Recommended Action", recommendation)
         with col2:
-            st.metric("Recommended Quantity", int(abs(100 * action)))
+            st.metric("Recommended Quantity", action if action >= 0 else -action)
