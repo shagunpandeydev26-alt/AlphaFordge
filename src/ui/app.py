@@ -3,9 +3,14 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 from pathlib import Path
+import sys
+
+# Add project root to Python path
+project_root = Path(__file__).resolve().parent.parent.parent
+sys.path.append(str(project_root))
 
 from stable_baselines3 import PPO
-from ..envs import SingleStockTradingEnv
+from src.envs import SingleStockTradingEnv
 from stable_baselines3.common.env_util import make_vec_env
 
 # --------------------------

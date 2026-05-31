@@ -68,8 +68,23 @@ class SingleStockTradingEnv(StockTradingEnv):
         # Get data from Yahoo Finance
         benchmark_ticker = "^GSPC" # S&P 500
 
-        df_s = YahooDownloader(start_date=start_date, end_date=end_date, ticker_list=[ticker]).fetch_data()
-        df_benchmark = YahooDownloader(start_date=start_date, end_date=end_date, ticker_list=[benchmark_ticker]).fetch_data()
+        try:
+            # Try using YahooDownloader
+            df_s = YahooDownloader(start_date=start_date, end_date=end_date, ticker_list=[ticker]).fetch_data()
+            df_benchmark = YahooDownloader(start_date=start_date, end_date=end_date, ticker_list=[benchmark_ticker]).fetch_data()
+        except ValueError as e:
+            # Fallback to legacy downloader
+            import yfinance as yf
+            
+            df_s = yf.download(ticker, start=start_date, end=end_date)
+            df_s.reset_index(inplace=True)
+            df_s.columns = [col[0].lower() for col in df_s.columns]
+            df_s['tic'] = ticker
+            
+            df_benchmark = yf.download(benchmark_ticker, start=start_date, end=end_date)
+            df_benchmark.reset_index(inplace=True)
+            df_benchmark.columns = [col[0].lower() for col in df_benchmark.columns]
+            df_benchmark = df_benchmark[['date', 'close']]
 
         df = pd.merge(df_s, df_benchmark[['date', 'close']], on='date', suffixes=('', '_benchmark'))
 
