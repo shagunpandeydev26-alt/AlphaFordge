@@ -1,52 +1,307 @@
-# RL Trading Agent
+# RL Trading Agent - Modular Reinforcement Learning Trading System
 
-## Environment 
+A comprehensive, modular reinforcement learning trading system built with stable-baselines3 and FinRL. This project provides a complete pipeline for training, evaluating, and deploying RL agents for algorithmic trading.
 
-The notebook uses a custom stock trading environment which extends StockTradingEnv of the open source library FinRL which is built on top of OpenAI Gym. It simulates a market where an agent interacts by making trading decisions. 
+## 🚀 Features
 
-Stable Baselines3: A collection of RL algorithms.
+- **Modular Architecture**: Clean separation of concerns with dedicated modules for environments, agents, training, inference, and utilities
+- **Multiple RL Algorithms**: Support for PPO and other stable-baselines3 algorithms
+- **Flexible Reward Functions**: Extensible reward system with profit-based, Sharpe ratio, and risk-adjusted rewards
+- **Comprehensive Evaluation**: Built-in backtesting, performance metrics, and comparison tools
+- **Web Interface**: Streamlit-based UI for easy interaction and visualization
+- **RESTful API**: FastAPI-based service for programmatic access
+- **Feature Engineering**: Advanced technical indicators and market regime detection
+- **Multiple Environments**: Single-stock, multi-asset, and continuous trading environments
 
-yfinance: Fetches stock data from Yahoo Finance.
+## 📁 Project Structure
 
-# Action
+```
+RLTradingAgent/
+├── src/                          # Main source code
+│   ├── agents/                   # RL agent implementations
+│   ├── data/                     # Data loading and feature engineering
+│   ├── envs/                     # Trading environments
+│   ├── inference/                # Model inference and API
+│   ├── rewards/                  # Reward function implementations
+│   ├── train/                    # Training and evaluation
+│   ├── ui/                       # Streamlit web interface
+│   ├── utils/                    # Utilities and metrics
+│   └── main.py                   # CLI entry point
+├── scripts/                      # Converted notebooks and utilities
+├── notebooks/                    # Original Jupyter notebooks
+├── models/                       # Trained model storage
+├── data/                         # Data storage
+├── logs/                         # Training and application logs
+├── results/                      # Evaluation results
+└── requirements.txt              # Python dependencies
+```
 
-Actions involve placing trades such as buying, selling, or holding stocks. More formally, we define a singular Action as: 
+## 🛠️ Installation
 
-A∈[-1,1]
+1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd RLTradingAgent
+```
 
-which is scaled on basis of hmax i.e. no. of stocks the agent can purchase or sell at a time. 
+2. **Create and activate virtual environment**
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-hmax=1initial_amount / max_price ⌋
+3. **Install dependencies**
+```bash
+pip install -r requirements.txt
+```
 
-$s t o c k \underline { } \div \min = n o .$ of different stocks the agent can trade in
+4. **Setup project structure**
+```bash
+python scripts/setup.py
+```
 
-Action Space:
+## 🚀 Quick Start
 
-$A = s t o c k \underline { d i m ^ { * } } c A$
+### Training a Model
 
-Transaction Costs: Buy/Sell costs are 0.1% per transaction to penalize the model for transactions similar to real-life scenarios. 
+```bash
+# Train a PPO agent for Apple stock
+python src/main.py train --ticker AAPL --start-date 2020-01-01 --end-date 2023-01-01
 
-Turbulence Threshold: Helps prevent excessive trading in high-volatility situations. 
+# Train with custom parameters
+python src/main.py train --ticker AAPL --total-timesteps 100000 --learning-rate 0.0003
+```
 
-## State Space
+### Running Evaluation
 
-state_space= 1 + 2 * stock_dim + len(indicators) * stock_dim
+```bash
+# Evaluate a trained model
+python src/main.py evaluate --ticker AAPL --start-date 2023-01-01 --end-date 2024-01-01
 
-where: 
+# Compare multiple models
+python src/main.py compare --tickers AAPL GOOGL MSFT --start-date 2023-01-01
+```
 
-• 1 represents the portfolio value.
+### Starting the Web Interface
 
-• 2 * stock_dim represents stock holdings and their prices.
+```bash
+streamlit run src/ui/app.py
+```
 
-• len(indicators) * stock_dim represents the number of technical indicators per stock. 
+### Starting the API Server
 
-Technical Indicators Used:
+```bash
+python src/inference/api.py
+```
 
-## • volume 
+## 📊 Environment Details
 
-Represents the number of shares or contracts traded in a given period. High volume often indicates strong interest and potential price movement. 
+### Action Space
+Actions represent trading decisions in continuous space [-1, 1]:
+- **-1**: Sell maximum allowed
+- **0**: Hold position  
+- **1**: Buy maximum allowed
 
-• macd (Moving Average Convergence Divergence)
+Actions are scaled by `hmax` (maximum holdings):
+```
+hmax = initial_amount / max_price
+```
+
+### State Space
+The state includes:
+- Portfolio value (1 dimension)
+- Stock holdings and prices (2 × stock_dim)  
+- Technical indicators (len(indicators) × stock_dim)
+
+**State Space Size**: `1 + 2 × stock_dim + len(indicators) × stock_dim`
+
+### Technical Indicators
+- **MACD**: Moving Average Convergence Divergence
+- **RSI**: Relative Strength Index
+- **Bollinger Bands**: Price volatility bands
+- **Volume**: Trading volume indicators
+- **SMA/EMA**: Simple and Exponential Moving Averages
+- **ATR**: Average True Range
+- **Stochastic Oscillator**: Momentum indicator
+
+### Reward Functions
+1. **Profit Reward**: Direct portfolio value changes
+2. **Sharpe Ratio Reward**: Risk-adjusted returns
+3. **Drawdown Penalty**: Penalizes large losses
+4. **Transaction Cost Aware**: Considers trading costs
+5. **Risk Adjusted**: Balances returns with risk metrics
+
+## 🎯 Usage Examples
+
+### Custom Training Configuration
+
+```python
+from src.train import TradingTrainer, TrainingConfig
+from src.rewards import SharpeRatioReward
+
+config = TrainingConfig(
+    ticker="AAPL",
+    start_date="2020-01-01",
+    end_date="2023-01-01",
+    total_timesteps=100000,
+    learning_rate=0.0003,
+    reward_function=SharpeRatioReward()
+)
+
+trainer = TradingTrainer(config)
+model = trainer.train()
+```
+
+### Programmatic Inference
+
+```python
+from src.inference import TradingInferenceEngine
+from stable_baselines3 import PPO
+
+# Load model and create inference engine
+model = PPO.load("models/AAPL.zip")
+engine = TradingInferenceEngine()
+
+# Get prediction
+action = engine.predict_action(model, env, portfolio_value=10000, num_shares=10)
+```
+
+### Custom Reward Function
+
+```python
+from src.rewards import BaseRewardFunction
+
+class CustomReward(BaseRewardFunction):
+    def calculate_reward(self, data: dict) -> float:
+        portfolio_value = data['portfolio_value']
+        benchmark_return = data.get('benchmark_return', 0)
+        
+        # Custom reward logic
+        return portfolio_value * 0.1 - abs(benchmark_return) * 0.05
+```
+
+## 📈 API Usage
+
+### Start API Server
+```bash
+python src/inference/api.py
+```
+
+### Make Predictions
+```bash
+curl -X POST "http://localhost:8000/predict" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "ticker": "AAPL",
+       "portfolio_value": 10000,
+       "num_shares": 10
+     }'
+```
+
+### Batch Evaluation
+```bash
+curl -X POST "http://localhost:8000/predict/batch" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "ticker": "AAPL", 
+       "start_date": "2023-01-01",
+       "end_date": "2023-12-31",
+       "initial_amount": 10000
+     }'
+```
+
+## 🧪 Testing and Evaluation
+
+### Run Backtests
+```bash
+# Single model backtest
+python src/main.py backtest --ticker AAPL --model-path models/AAPL.zip
+
+# Cross-validation
+python src/main.py cv --ticker AAPL --folds 5
+```
+
+### Generate Reports
+```bash
+# Comprehensive evaluation report
+python src/main.py report --ticker AAPL --output-dir results/
+```
+
+## 📊 Performance Metrics
+
+The system tracks comprehensive performance metrics:
+
+- **Returns**: Total, annualized, and risk-adjusted returns
+- **Risk Metrics**: Sharpe ratio, Sortino ratio, maximum drawdown
+- **Trading Metrics**: Win rate, profit factor, trading frequency
+- **Benchmark Comparison**: Alpha, beta, tracking error
+- **Portfolio Metrics**: Volatility, VaR, Calmar ratio
+
+## 🛡️ Risk Management
+
+- **Transaction Costs**: 0.1% per transaction (configurable)
+- **Position Limits**: Maximum position sizing controls
+- **Drawdown Limits**: Automatic position reduction on large losses
+- **Volatility Filters**: Reduced trading during high volatility periods
+
+## 🔧 Configuration
+
+### Environment Variables
+```bash
+export MODELS_DIR="./models"
+export DATA_DIR="./data" 
+export LOG_LEVEL="INFO"
+```
+
+### Training Configuration
+```yaml
+# config.yaml
+training:
+  total_timesteps: 100000
+  learning_rate: 0.0003
+  batch_size: 64
+  n_steps: 2048
+
+environment:
+  initial_amount: 10000
+  transaction_cost_pct: 0.001
+  turbulence_threshold: 140
+
+features:
+  technical_indicators: true
+  time_features: true
+  market_regime: true
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [FinRL](https://github.com/AI4Finance-Foundation/FinRL) for the trading environment foundation
+- [Stable-Baselines3](https://github.com/DLR-RM/stable-baselines3) for RL algorithms
+- [yfinance](https://github.com/ranaroussi/yfinance) for market data
+- [ta](https://github.com/bukosabino/ta) for technical indicators
+
+## 📞 Support
+
+For questions and support:
+- Create an issue in the GitHub repository
+- Check the [documentation](docs/) 
+- Review existing [discussions](../../discussions)
+
+---
+
+**Disclaimer**: This software is for educational and research purposes only. Past performance does not guarantee future results. Always conduct your own research before making investment decisions.
 
 A trend-following momentum indicator that shows the relationship between two moving averages. It helps identify potential buy or sell signals based on crossovers and divergence.
 
