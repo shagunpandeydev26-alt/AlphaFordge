@@ -2,26 +2,26 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 from datetime import datetime
-from stable_baselines3 import PPO, A2C #A2C models can only be loaded by A2C, same for PPO
+from stable_baselines3 import PPO
 from pathlib import Path
-import zipfile
+from envs import SingleStockTradingEnv
 
 # --------------------------
 # Model Management Section
 # --------------------------
 MODELS_DIR = Path(__file__).parent.parent / "models"  # src/ and models/ are siblings
-
+env = SingleStockTradingEnv()
 
 def load_model(ticker):
     """Load model from models/{ticker}.zip"""
     model_path = MODELS_DIR / f"{ticker}.zip"
-    
+     
     if not model_path.exists():
         st.error(f"No model found for {ticker}!")
         return None
 
     try:
-        model = A2C.load(model_path) # use PPO if trained with PPO etc
+        model = PPO.load(model_path, env=env)
         st.success(f"Loaded model for {ticker}")
         return  model
         
@@ -34,8 +34,8 @@ def load_model(ticker):
 # --------------------------
 st.title("Single-Stock RL Trading Agent")
 
-# Predefined tickers (update with your trained tickers)
-TICKERS = ["AAPL", "TSLA", "MSFT", "GOOGL", "NVDA"] # needs updation
+# Get tickers
+TICKERS = [f.stem for f in MODELS_DIR.glob("*.zip")]
 
 # Main interface
 col1, col2 = st.columns(2)
