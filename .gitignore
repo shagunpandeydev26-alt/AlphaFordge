@@ -1,8 +1,42 @@
-# Ignore Python cache
-**__pycache__**
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 
-# Ignore virtual environment
+# Virtual environments
 venv/
+env/
+ENV/
+.venv/
+.env/
 
-# Ignore models
-models/
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Logs
+*.log
+logs/
+
+# Data files (but keep models)
+data/
+*.csv
+*.json
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Streamlit secrets
+.streamlit/secrets.toml

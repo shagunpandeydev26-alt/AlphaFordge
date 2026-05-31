@@ -11,7 +11,10 @@ sys.path.append(str(project_root))
 
 from stable_baselines3 import PPO
 from src.envs import SingleStockTradingEnv
-from stable_baselines3.common.env_util import make_vec_env
+from src.data.data_loader import DataLoader
+from src.agents.PPOAgent import TradingPPOAgent
+from src.inference.inference import TradingInferenceEngine
+from src.utils.metrics import PerformanceMetrics
 
 # --------------------------
 # Model Management Section
@@ -19,54 +22,43 @@ from stable_baselines3.common.env_util import make_vec_env
 BASE_DIR = Path(__file__).resolve().parent.parent.parent 
 MODELS_DIR = BASE_DIR / "models"  # src/ and models/ are siblings
 
-# Load model
-def load_model(ticker, env):
-    """Load model from models/{ticker}.zip"""
-    model_path = MODELS_DIR / f"{ticker}.zip"
+class ModelManager:
+    """Handles model loading and management for the UI"""
+    
+    def __init__(self):
+        self.data_loader = DataLoader()
+        self.inference_engine = TradingInferenceEngine()
+    
+    def get_available_tickers(self):
+        """Get list of available model tickers"""
+        return [f.stem for f in MODELS_DIR.glob("*.zip")]
+    
+    def load_model(self, ticker, env):
+        """Load model from models/{ticker}.zip"""
+        model_path = MODELS_DIR / f"{ticker}.zip"
 
-    if not model_path.exists():
-        st.error(f"No model found for {ticker}!")
-        return None
+        if not model_path.exists():
+            st.error(f"No model found for {ticker}!")
+            return None
 
-    try:
-        model = PPO.load(model_path, env=env)
-        print(f"Loaded model for {ticker}")
-        st.success(f"Loaded model for {ticker}")
-        return model
+        try:
+            model = PPO.load(model_path, env=env)
+            print(f"Loaded model for {ticker}")
+            st.success(f"Loaded model for {ticker}")
+            return model
 
-    except Exception as e:
-        st.error(f"Error loading model for {ticker}: {str(e)}")
-        return None
+        except Exception as e:
+            st.error(f"Error loading model for {ticker}: {str(e)}")
+            return None
 
-def predict(model, env, portfolio_value, num_stock_shares):
-    """Predict next action using the model"""
-    print(f"Predicting next action with {num_stock_shares} shares and {portfolio_value} portfolio value")
-    row_df = env.df.tail(1).reset_index(drop=True)
-    st.write(row_df)
-    predict_env = SingleStockTradingEnv(
-        df=row_df, 
-        hmax=portfolio_value // max(env.df['close']),
-        initial_amount=portfolio_value, 
-        num_stock_shares=[num_stock_shares],
-    )
-    obs, info = predict_env.reset()
-    action, _states = model.predict(obs)
-    print(f"Predicted action: {action}")
+    def predict_action(self, model, env, portfolio_value, num_stock_shares):
+        """Predict next action using the model"""
+        return self.inference_engine.predict_action(
+            model, env, portfolio_value, num_stock_shares
+        )
 
-    action = int(action[0] * predict_env.hmax)
-
-    # check if the action is valid
-    if action < 0:
-        tosell = -action
-        if tosell > num_stock_shares:
-            action = num_stock_shares
-
-    if action > 0:
-        tobuy = action
-        if tobuy * predict_env.df["close"][0] > portfolio_value:
-            action = portfolio_value // predict_env["close"][0]
-
-    return action
+# Initialize model manager
+model_manager = ModelManager()
 
 # --------------------------
 # Streamlit UI
@@ -74,7 +66,7 @@ def predict(model, env, portfolio_value, num_stock_shares):
 st.title("Single-Stock RL Trading Agent")
 
 # Get tickers
-TICKERS = [f.stem for f in MODELS_DIR.glob("*.zip")]
+TICKERS = model_manager.get_available_tickers()
 
 # Main interface
 col1, col2, col3 = st.columns(3)
@@ -109,7 +101,7 @@ if selected_ticker:
 
     # Load model when ticker changes
     with st.spinner(f"Loading {selected_ticker} model..."):
-        model = load_model(selected_ticker, st.session_state.env)
+        model = model_manager.load_model(selected_ticker, st.session_state.env)
         if model:
             st.session_state.loaded_model = model
 
@@ -130,7 +122,12 @@ if st.button("Generate Prediction"):
         st.error("Model failed to load!")
     else:
         st.success(f"Prediction for {selected_ticker} on {prediction_date.strftime('%Y-%m-%d')}")
-        action = predict(st.session_state.loaded_model, st.session_state.env, portfolio_value, num_stock_shares)
+        action = model_manager.predict_action(
+            st.session_state.loaded_model, 
+            st.session_state.env, 
+            portfolio_value, 
+            num_stock_shares
+        )
 
         recommendation = "BUY" if action > 0 else ("SELL" if action < 0 else "HOLD")
 
