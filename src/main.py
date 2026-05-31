@@ -1,106 +1,103 @@
 import streamlit as st
 import yfinance as yf
 import pandas as pd
+from datetime import datetime
+from stable_baselines3 import PPO, A2C #A2C models can only be loaded by A2C, same for PPO
+from pathlib import Path
+import zipfile
 
 # --------------------------
 # Model Management Section
 # --------------------------
-# (model loading/saving logic)
+MODELS_DIR = Path(__file__).parent.parent / "models"  # src/ and models/ are siblings
 
-def train_new_model(tickers, start_date, end_date):
-    """Placeholder for training logic"""
-    st.success("Model training completed!")
-    return None 
 
-def save_model(model, filename):
-    """Placeholder for model saving"""
-    pass
+def load_model(ticker):
+    """Load model from models/{ticker}.zip"""
+    model_path = MODELS_DIR / f"{ticker}.zip"
+    
+    if not model_path.exists():
+        st.error(f"No model found for {ticker}!")
+        return None
 
-def load_model(uploaded_file):
-    """Placeholder for model loading"""
-    return None
+    try:
+        model = A2C.load(model_path) # use PPO if trained with PPO etc
+        st.success(f"Loaded model for {ticker}")
+        return  model
+        
+    except Exception as e:
+        st.error(f"Error loading model for {ticker}: {str(e)}")
+        return None
 
 # --------------------------
 # Streamlit UI
 # --------------------------
-st.title("RL Trading Agent Dashboard")
+st.title("Single-Stock RL Trading Agent")
 
-# Sidebar for model management
-with st.sidebar:
-    st.header("Model Management")
-    
-    # Model training section
-    st.subheader("Train New Model")
-    train_tickers = st.multiselect("Select training tickers", 
-                                 ["AAPL", "TSLA", "MSFT", "GOOGL", "AMZN"],
-                                 key="train_tickers")
-    train_start = st.date_input("Training start date", value=pd.to_datetime("2020-01-01"))
-    train_end = st.date_input("Training end date", value=pd.to_datetime("2023-01-01"))
-    
-    if st.button("Train New Model"):
-        model = train_new_model(train_tickers, train_start, train_end)
-        st.session_state.current_model = model
-    
-    # Model saving section
-    st.subheader("Save Model")
-    save_name = st.text_input("Save as filename", "my_rl_model")
-    if st.button("Save Current Model"):
-        if 'current_model' in st.session_state:
-            save_model(st.session_state.current_model, save_name)
-        else:
-            st.error("No model available to save!")
-    
-    # Model loading section
-    st.subheader("Load Model")
-    uploaded_file = st.file_uploader("Choose model file", type=["pkl", "h5", "zip"])
-    if uploaded_file is not None:
-        loaded_model = load_model(uploaded_file)
-        st.session_state.current_model = loaded_model
+# Predefined tickers (update with your trained tickers)
+TICKERS = ["AAPL", "TSLA", "MSFT", "GOOGL", "NVDA"] # needs updation
 
 # Main interface
-st.header("Trading Configuration")
-selected_tickers = st.multiselect("Select tickers for analysis", 
-                                ["AAPL", "TSLA", "MSFT", "GOOGL", "AMZN"])
+col1, col2 = st.columns(2)
+with col1:
+    # Ticker selection
+    selected_ticker = st.selectbox("Select stock ticker", TICKERS)
 
-# Historical Data Display
-st.subheader("Historical Trends")
-if selected_tickers:
-    start_date = st.date_input("Start date", value=pd.to_datetime("2020-01-01"))
-    end_date = st.date_input("End date", value=pd.to_datetime("2023-01-01"))
-    
-    data = yf.download(selected_tickers, start=start_date, end=end_date)['Adj Close']
+with col2:
+    # Portfolio Value Input
+    portfolio_value = st.number_input("Portfolio Value ($)", 
+                                    min_value=0.0, 
+                                    value=100000.0,
+                                    step=1000.0)
+
+# Date selection
+prediction_date = st.date_input("Prediction date", 
+                              value=datetime.today(), 
+                              min_value=datetime(2023, 1, 1), 
+                              max_value=datetime.today())
+
+# Load model when ticker is selected
+if selected_ticker:
+    if 'loaded_model' not in st.session_state or st.session_state.current_ticker != selected_ticker:
+        with st.spinner(f"Loading {selected_ticker} model..."):
+            model = load_model(selected_ticker)
+            if model:
+                st.session_state.loaded_model = model
+                st.session_state.current_ticker = selected_ticker
+
+# Historical Data
+st.header(f"{selected_ticker} Historical Trends")
+hist_start = st.date_input("History start date", 
+                         value=prediction_date - pd.DateOffset(months=6),
+                         max_value=prediction_date)
+
+if selected_ticker:
+    data = yf.download(selected_ticker, start=hist_start, end=prediction_date)['Adj Close']
     st.line_chart(data)
-else:
-    st.warning("Please select tickers to view historical data")
 
-# Portfolio Input Section
-st.header("Portfolio Configuration")
-num_assets = st.number_input("Number of assets in portfolio", min_value=1, max_value=10, value=1)
+# Prediction Section
+st.header("Trading Recommendation")
+if st.button("Generate Prediction"):
+    if 'loaded_model' not in st.session_state:
+        st.error("Model failed to load!")
+    else:
+        # prediction logic here, defined variables :
+        # - st.session_state.loaded_model
+        # - selected_ticker
+        # - prediction_date
+        # - portfolio_value
+        
+        # Example prediction output
+        st.success(f"Prediction for {selected_ticker} on {prediction_date}")
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Recommended Action", "BUY")
+        with col2:
+            st.metric("Expected Return", "+2.8%")
+        with col3:
+            st.metric("Confidence Level", "82%")
 
-portfolio = {}
-for i in range(num_assets):
-    col1, col2 = st.columns(2)
-    with col1:
-        ticker = st.text_input(f"Ticker {i+1}", key=f"ticker_{i}")
-    with col2:
-        shares = st.number_input(f"Shares {i+1}", min_value=0.0, value=0.0, key=f"shares_{i}")
-    portfolio[ticker] = shares
-
-portfolio_value = st.number_input("Current Portfolio Value ($)", 
-                                min_value=0.0, 
-                                value=100000.0)
-
-# --------------------------
-# Trading Execution Section
-# --------------------------
-# (trading execution logic)
-
-st.header("Current Configuration")
-st.subheader("Selected Assets")
-st.write(portfolio)
-st.subheader("Portfolio Value")
-st.write(f"${portfolio_value:,.2f}")
-
-# --------------------------
-# prediction/trading execution logic below
-# --------------------------
+        st.subheader("Position Sizing")
+        st.write(f"Suggested investment: ${portfolio_value * 0.15:,.2f} (15% of portfolio)")
+        st.write("Risk management: Stop-loss at 5% below entry")
