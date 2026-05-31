@@ -1,0 +1,31 @@
+# Pinned dependency set verified to install and run the test suite together.
+#
+# These pins encode a few non-obvious compatibility constraints discovered while
+# wiring up CI:
+#   * numpy is held at 1.26.x: scikit-learn 1.3.2 (a finrl dependency) is built
+#     against the numpy 1.x ABI and crashes on numpy 2.x.
+#   * yfinance is held at 0.2.52: newer yfinance needs websockets>=13, which
+#     conflicts with alpaca-trade-api (pulled in transitively by finrl) needing
+#     websockets<11.
+#   * alpaca-trade-api / exchange-calendars / stockstats / ta are explicit because
+#     finrl imports them at package-import time.
+
+numpy==1.26.4
+pandas==2.2.3
+scipy==1.16.3
+scikit-learn==1.3.2
+matplotlib==3.10.3
+gymnasium==1.2.3
+
+stable-baselines3==2.8.0
+torch==2.5.1
+finrl==0.3.7
+
+yfinance==0.2.52
+ta==0.11.0
+exchange_calendars==4.13.2
+stockstats==0.6.8
+alpaca_trade_api==3.2.0
+
+pytest==9.0.3
+pytest-cov>=4.0.0
