@@ -9,6 +9,8 @@
 #     websockets<11.
 #   * alpaca-trade-api / exchange-calendars / stockstats / ta are explicit because
 #     finrl imports them at package-import time.
+#   * wrds is imported transitively by finrl.train → data_processor, and finrl's
+#     __init__ eagerly imports it, so even simple test collection crashes without it.
 
 numpy==1.26.4
 pandas==2.2.3
@@ -20,12 +22,14 @@ gymnasium==1.2.3
 stable-baselines3==2.8.0
 torch==2.5.1
 finrl==0.3.7
+streamlit>=1.38.0
 
 yfinance==0.2.52
 ta==0.11.0
 exchange_calendars==4.13.2
 stockstats==0.6.8
 alpaca_trade_api==3.2.0
+wrds>=3.1.0
 
 pytest==9.0.3
 pytest-cov>=4.0.0

@@ -4,6 +4,16 @@ No network or yfinance access: every fixture builds an in-memory DataFrame so th
 suite runs deterministically in CI.
 """
 
+# Ensure `wrds` is importable before finrl tries to import it at module level.
+# finrl 0.3.7 eagerly imports wrds via its train → data_processor chain, but
+# wrds is an optional academic-database package not available in CI.  A stub
+# in sys.modules satisfies the import guard so the rest of the stack loads.
+import sys
+from unittest.mock import MagicMock
+
+if "wrds" not in sys.modules:
+    sys.modules["wrds"] = MagicMock()
+
 import numpy as np
 import pandas as pd
 import pytest
