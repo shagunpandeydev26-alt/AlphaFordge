@@ -6,5 +6,6 @@ including single predictions, batch inference, and model evaluation.
 """
 
 from .inference import TradingInferenceEngine, ModelInferenceAPI
+from .backtest import Backtester
 
-__all__ = ['TradingInferenceEngine', 'ModelInferenceAPI']
+__all__ = ['TradingInferenceEngine', 'ModelInferenceAPI', 'Backtester']

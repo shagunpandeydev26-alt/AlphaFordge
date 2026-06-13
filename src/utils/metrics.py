@@ -441,19 +441,26 @@ class PerformanceMetrics:
         if price is not None:
             self.prices.append(price)
     
-    def calculate_all_metrics(self) -> Dict[str, float]:
+    def calculate_all_metrics(self, risk_free_rate: float = 0.02) -> Dict[str, float]:
         """Calculate all available performance metrics"""
         if len(self.portfolio_values) < 2:
             return {}
-            
-        # Use the existing calculate_trading_metrics function
+
+        # Use the existing calculate_trading_metrics function with its real
+        # signature. Previously this passed kwargs (benchmark_values, actions,
+        # prices) that do not exist on calculate_trading_metrics, so any call
+        # raised TypeError. Pass a benchmark only when one was actually recorded.
+        benchmark_data = (
+            np.array(self.benchmark_values) if self.benchmark_values else None
+        )
+
         metrics = calculate_trading_metrics(
             portfolio_values=self.portfolio_values,
-            benchmark_values=self.benchmark_values,
-            actions=self.actions,
-            prices=self.prices
+            benchmark_data=benchmark_data,
+            initial_amount=self.portfolio_values[0],
+            risk_free_rate=risk_free_rate,
         )
-        
+
         return metrics
     
     def get_sharpe_ratio(self, risk_free_rate: float = 0.02) -> float:

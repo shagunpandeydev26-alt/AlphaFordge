@@ -181,6 +181,12 @@ class TradingTrainer:
             model_path = Path(self.config.model_dir) / f"{self.config.ticker}.zip"
             agent.save(model_path)
             self.logger.info(f"Model saved to {model_path}")
+
+            # Write a sidecar metadata file next to the model so the backtester can
+            # automatically verify a test window is out-of-sample (does not overlap
+            # the training dates). Models trained before this existed have no sidecar,
+            # in which case the backtester falls back to a visible warning.
+            self._write_model_metadata(model_path)
             
             # Calculate additional metrics
             portfolio_values = eval_results['portfolio_values']
@@ -220,6 +226,37 @@ class TradingTrainer:
             self.logger.error(f"Training failed: {str(e)}")
             raise
     
+    def _write_model_metadata(self, model_path: Path) -> None:
+        """Write models/<TICKER>.json with the training window and hyperparameters.
+
+        Read by the backtester to assert out-of-sample test windows.
+        """
+        import json
+
+        hyperparams = {
+            'total_timesteps': self.config.total_timesteps,
+            'learning_rate': self.config.learning_rate,
+            'n_steps': self.config.n_steps,
+            'batch_size': self.config.batch_size,
+            'n_epochs': self.config.n_epochs,
+            'gamma': self.config.gamma,
+            'gae_lambda': self.config.gae_lambda,
+            'clip_range': self.config.clip_range,
+            'reward_type': self.config.reward_type,
+            'reward_weights': self.config.reward_weights,
+        }
+        metadata = {
+            'ticker': self.config.ticker,
+            'train_start': self.config.start_date,
+            'train_end': self.config.end_date,
+            'hyperparams': hyperparams,
+        }
+
+        meta_path = model_path.with_suffix('.json')
+        with open(meta_path, 'w') as f:
+            json.dump(metadata, f, indent=2)
+        self.logger.info(f"Model metadata saved to {meta_path}")
+
     def _save_results(self, results: Dict[str, Any], path: Path) -> None:
         """Save training results to JSON file"""
         import json

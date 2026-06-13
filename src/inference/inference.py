@@ -173,16 +173,40 @@ class TradingInferenceEngine:
                 if step_count >= max_steps:
                     break
         
-        # Calculate performance metrics
-        returns = np.array(portfolio_values)
-        benchmark_returns = data['close'].pct_change().fillna(0).cumsum()
-        
+        # Calculate performance metrics.
+        # Bug fix (#1): the previous benchmark was data['close'].pct_change().cumsum(),
+        # a cumulative *sum* of daily percent changes, compared against the agent's
+        # plain return fraction - two different scales, so the comparison was
+        # meaningless. We now build a true buy-and-hold equity curve (same initial
+        # capital, same 0.1%/side cost as the agent) via the Backtester and compare
+        # both as return fractions on the same scale. We also derive daily returns
+        # correctly (the old code passed price *levels* to the Sharpe helper).
+        from ..utils.metrics import (
+            calculate_returns,
+            calculate_sharpe_ratio,
+            calculate_max_drawdown,
+        )
+        from .backtest import Backtester
+
+        daily_returns = calculate_returns(portfolio_values)
+        total_return = (portfolio_values[-1] - initial_amount) / initial_amount
+
+        benchmark_curve = Backtester(initial_amount=initial_amount).run_buy_and_hold(
+            data
+        )["portfolio_values"]
+        benchmark_return = (
+            (benchmark_curve[-1] - initial_amount) / initial_amount
+            if benchmark_curve
+            else 0.0
+        )
+
         metrics = {
-            'total_return': (portfolio_values[-1] - initial_amount) / initial_amount,
-            'sharpe_ratio': self.metrics.calculate_sharpe_ratio(returns),
-            'max_drawdown': self.metrics.calculate_max_drawdown(returns),
-            'volatility': np.std(returns),
-            'benchmark_return': benchmark_returns.iloc[-1]
+            'total_return': total_return,
+            'sharpe_ratio': calculate_sharpe_ratio(daily_returns),
+            'max_drawdown': calculate_max_drawdown(portfolio_values),
+            'volatility': np.std(daily_returns),
+            'benchmark_return': benchmark_return,
+            'excess_return': total_return - benchmark_return,
         }
         
         return {

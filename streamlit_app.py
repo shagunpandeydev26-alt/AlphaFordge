@@ -12,7 +12,7 @@ st.set_page_config(
 
 import numpy as np
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, date
 from pathlib import Path
 import sys
 
@@ -220,6 +220,94 @@ if selected_ticker:
                     
             except Exception as e:
                 st.error(f"Error generating prediction: {e}")
+
+# --------------------------
+# Backtest vs. Baselines
+# --------------------------
+st.markdown("---")
+with st.expander("📊 Backtest vs. Baselines (out-of-sample)"):
+    st.caption(
+        "Compare the RL agent against buy-and-hold and random baselines over a test "
+        "window, under identical starting cash and the same 0.1%/side transaction costs."
+    )
+
+    bt_col1, bt_col2, bt_col3, bt_col4 = st.columns(4)
+    with bt_col1:
+        bt_ticker = st.selectbox("Ticker", TICKERS, key="bt_ticker")
+    with bt_col2:
+        bt_start = st.date_input("Test start", value=date(2023, 1, 1), key="bt_start")
+    with bt_col3:
+        bt_end = st.date_input("Test end", value=date(2024, 12, 31), key="bt_end")
+    with bt_col4:
+        bt_initial = st.number_input(
+            "Initial capital ($)", min_value=100.0, value=10000.0, step=1000.0, key="bt_initial"
+        )
+
+    if st.button("Run backtest", key="run_backtest"):
+        try:
+            from src.inference.backtest import Backtester, load_backtest_data
+            from src.utils.plot import plot_equity_curves
+
+            with st.spinner("Running agent / buy-and-hold / random..."):
+                model_path = MODELS_DIR / f"{bt_ticker}.zip"
+                model = PPO.load(model_path)
+                data = load_backtest_data(bt_ticker, str(bt_start), str(bt_end))
+
+                backtester = Backtester(initial_amount=float(bt_initial))
+                results = backtester.compare(
+                    model,
+                    data,
+                    test_start=str(bt_start),
+                    test_end=str(bt_end),
+                    ticker=bt_ticker,
+                    models_dir=MODELS_DIR,
+                )
+
+            if Backtester._is_fabricated_data(data):
+                st.warning(
+                    "⚠️ This ticker's data looks fabricated (the dummy-data fallback was "
+                    "likely used). These results do not reflect real market conditions."
+                )
+            st.info(
+                "ℹ️ No training-date metadata is shipped with these models, so the "
+                "out-of-sample window could not be auto-verified."
+            )
+
+            # Comparison table
+            metric_labels = {
+                "total_return_pct": "Total Return %",
+                "annualized_return_pct": "Annualized Return %",
+                "sharpe_ratio": "Sharpe",
+                "sortino_ratio": "Sortino",
+                "calmar_ratio": "Calmar",
+                "max_drawdown_pct": "Max Drawdown %",
+                "volatility_pct": "Volatility %",
+                "final_value": "Final Value $",
+            }
+            strategy_labels = [
+                ("agent", "RL Agent"),
+                ("buy_and_hold", "Buy & Hold"),
+                ("random", "Random"),
+            ]
+            table = pd.DataFrame(
+                {
+                    name: {
+                        label: results[key].get(metric)
+                        for metric, label in metric_labels.items()
+                    }
+                    for key, name in strategy_labels
+                }
+            )
+            st.dataframe(table.style.format("{:.2f}"), use_container_width=True)
+
+            # Equity-curve + drawdown plot
+            fig = plot_equity_curves(
+                results["curves"], title=f"{bt_ticker}: Agent vs. Baselines"
+            )
+            st.pyplot(fig)
+
+        except Exception as e:
+            st.error(f"Backtest failed: {e}")
 
 # Footer
 st.markdown("---")
