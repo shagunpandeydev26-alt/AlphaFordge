@@ -1,5 +1,5 @@
 """
-Inference module for the RL Trading Agent.
+Inference module for AlphaFordge.
 
 This module provides inference capabilities for trained RL trading models,
 including single predictions, batch inference, and model evaluation.

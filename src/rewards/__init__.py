@@ -1,8 +1,8 @@
 """
-Rewards module for the RL Trading Agent.
+Rewards module for AlphaFordge.
 
 This module provides various reward function implementations
-for training RL trading agents with different objectives.
+for training AlphaFordge with different objectives.
 """
 
 from .reward_function import (

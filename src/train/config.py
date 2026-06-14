@@ -9,7 +9,7 @@ from pathlib import Path
 
 @dataclass
 class TrainingConfig:
-    """Configuration class for training RL trading agents"""
+    """Configuration class for training AlphaFordge"""
     
     # Data parameters
     ticker: str = "GOOGL"

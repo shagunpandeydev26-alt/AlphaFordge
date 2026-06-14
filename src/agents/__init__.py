@@ -1,5 +1,5 @@
 """
-Agents module for the RL Trading Agent.
+Agents module for AlphaFordge.
 
 This module provides RL agent implementations for trading,
 including PPO and other algorithm variants.

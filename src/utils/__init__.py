@@ -1,5 +1,5 @@
 """
-Utilities module for the RL Trading Agent.
+Utilities module for AlphaFordge.
 
 This module provides common utilities including logging, metrics calculation,
 and other helper functions used across the project.

@@ -1,5 +1,5 @@
 """
-Out-of-sample backtesting and baseline comparison for RL trading agents.
+Out-of-sample backtesting and baseline comparison for AlphaFordge.
 
 This module runs three strategies over an identical out-of-sample window with the
 same starting cash and the same transaction costs:

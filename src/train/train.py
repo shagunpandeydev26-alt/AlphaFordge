@@ -1,5 +1,5 @@
 """
-Training module for RL trading agents
+Training module for AlphaFordge
 """
 
 import os
@@ -26,7 +26,7 @@ warnings.filterwarnings("ignore")
 
 
 class TradingTrainer:
-    """Main training class for RL trading agents"""
+    """Main training class for AlphaFordge"""
     
     def __init__(self, config: TrainingConfig):
         """
@@ -360,7 +360,7 @@ if __name__ == "__main__":
     # Example usage
     import argparse
     
-    parser = argparse.ArgumentParser(description="Train RL trading agents")
+    parser = argparse.ArgumentParser(description="Train AlphaFordge")
     parser.add_argument("--ticker", type=str, default="GOOGL", help="Stock ticker")
     parser.add_argument("--start_date", type=str, default="2015-01-01", help="Start date")
     parser.add_argument("--end_date", type=str, default="2025-01-01", help="End date")

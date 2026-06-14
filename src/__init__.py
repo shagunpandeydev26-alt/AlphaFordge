@@ -1,12 +1,12 @@
 """
-RL Trading Agent - A modular reinforcement learning trading system.
+AlphaFordge - A modular reinforcement learning trading system.
 
 This package provides a complete RL trading solution with modular components
 for data loading, environment management, agent training, inference, and evaluation.
 """
 
 __version__ = "1.0.0"
-__author__ = "RL Trading Team"
+__author__ = "AlphaFordge Team"
 
 # Lazily-imported submodules — the heavy finrl/stable-baselines3/streamlit
 # stack is loaded only when actually accessed, so that importing the top-level

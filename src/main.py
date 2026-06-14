@@ -1,5 +1,5 @@
 """
-Main entry point for the RL Trading Agent project
+Main entry point for the AlphaFordge project
 """
 
 import argparse
@@ -165,7 +165,7 @@ def batch_train(args):
 
 def main():
     """Main entry point"""
-    parser = argparse.ArgumentParser(description="RL Trading Agent")
+    parser = argparse.ArgumentParser(description="AlphaFordge")
     subparsers = parser.add_subparsers(dest='mode', help='Operation mode')
     
     # Training mode

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Setup script for the RL Trading Agent project.
+Setup script for the AlphaFordge project.
 Creates necessary directories and initializes the project structure.
 """
 
@@ -26,7 +26,7 @@ def setup_project():
         "notebooks/backup"
     ]
     
-    print("Setting up RL Trading Agent project structure...")
+    print("Setting up AlphaFordge project structure...")
     
     for directory in directories:
         dir_path = project_root / directory

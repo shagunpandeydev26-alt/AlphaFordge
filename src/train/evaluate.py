@@ -21,7 +21,7 @@ logger = setup_logger(__name__)
 
 class ModelEvaluator:
     """
-    Comprehensive model evaluation class for RL trading agents.
+    Comprehensive model evaluation class for AlphaFordge.
     Provides various evaluation methods and visualization tools.
     """
     

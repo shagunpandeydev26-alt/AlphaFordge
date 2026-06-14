@@ -13,7 +13,7 @@ from ..utils.logger import setup_logger
 logger = setup_logger(__name__)
 
 # FastAPI app
-app = FastAPI(title="RL Trading Agent API", version="1.0.0")
+app = FastAPI(title="AlphaFordge API", version="1.0.0")
 
 # Initialize inference API
 models_dir = Path(__file__).parent.parent.parent / "models"
@@ -52,7 +52,7 @@ class ModelStatusResponse(BaseModel):
 @app.get("/")
 async def root():
     """Health check endpoint."""
-    return {"message": "RL Trading Agent API is running"}
+    return {"message": "AlphaFordge API is running"}
 
 @app.get("/models", response_model=ModelStatusResponse)
 async def get_available_models():

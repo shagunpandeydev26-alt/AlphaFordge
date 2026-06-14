@@ -1,5 +1,5 @@
 """
-Training module for the RL Trading Agent.
+Training module for AlphaFordge.
 
 This module provides training, evaluation, and configuration management
 for RL trading models.

@@ -63,7 +63,7 @@ model_manager = ModelManager()
 # --------------------------
 # Streamlit UI
 # --------------------------
-st.title("Single-Stock RL Trading Agent")
+st.title("AlphaFordge")
 
 # Get tickers
 TICKERS = model_manager.get_available_tickers()

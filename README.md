@@ -1,4 +1,4 @@
-# AlphaForge — RL Trading Agent
+# AlphaFordge — RL Trading Agent
 
 A modular reinforcement-learning trading system built on
 [Stable-Baselines3](https://github.com/DLR-RM/stable-baselines3) and
@@ -8,7 +8,7 @@ agents for single-stock trading — with an out-of-sample backtesting harness th
 benchmarks the agent against buy-and-hold and random baselines under identical
 transaction costs.
 
-![tests](https://github.com/shagunpandeydev26-alt/AlphaForge/actions/workflows/tests.yml/badge.svg)
+![tests](https://github.com/shagunpandeydev26-alt/AlphaFordge/actions/workflows/tests.yml/badge.svg)
 
 ---
 
@@ -32,8 +32,8 @@ transaction costs.
 ## Installation
 
 ```bash
-git clone https://github.com/shagunpandeydev26-alt/AlphaForge.git
-cd AlphaForge
+git clone https://github.com/shagunpandeydev26-alt/AlphaFordge.git
+cd AlphaFordge
 
 python -m venv venv
 source venv/bin/activate          # Windows: venv\Scripts\activate
@@ -124,7 +124,7 @@ return populate against the obvious alternative. The harness also:
 ## Project structure
 
 ```
-AlphaForge/
+AlphaFordge/
 ├── src/
 │   ├── agents/        # PPO agent wrapper
 │   ├── data/          # data loading + feature engineering

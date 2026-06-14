@@ -1,12 +1,12 @@
 # Setup Guide
 
-This guide will help you set up your environment and download the necessary models for the RL Trading Agent project.
+This guide will help you set up your environment and download the necessary models for the AlphaFordge project.
 
 ## 1. Clone the Repository
 
 ```sh
-git clone https://github.com/yourusername/RLTradingAgent.git
-cd RLTradingAgent
+git clone https://github.com/shagunpandeydev26-alt/AlphaFordge.git
+cd AlphaFordge
 ```
 
 ## 2. Set Up a Virtual Environment
@@ -37,7 +37,7 @@ pip install -r requirements.txt
 
 Pretrained models are hosted on GitHub Releases. Download them using the following steps:
 
-1. Go to the [Releases](https://github.com/Aryan10/RLTradingAgent/releases) page.
+1. Go to the [Releases](https://github.com/shagunpandeydev26-alt/AlphaFordge/releases) page.
 2. Download the latest model files (`*.zip`).
 3. Extract the files into the `models/` directory:
 

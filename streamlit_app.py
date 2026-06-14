@@ -5,7 +5,7 @@ import streamlit as st
 
 # MUST be first - configure page settings
 st.set_page_config(
-    page_title="RL Trading Agent",
+    page_title="AlphaFordge",
     page_icon="📈",
     layout="wide"
 )
@@ -94,7 +94,7 @@ model_manager = get_model_manager()
 # Streamlit UI
 # --------------------------
 
-st.title("📈 Single-Stock RL Trading Agent")
+st.title("📈 AlphaFordge")
 st.markdown("*Reinforcement Learning-powered stock trading recommendations*")
 
 # Get tickers
